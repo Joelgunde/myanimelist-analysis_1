@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyAnimeList Data Analysis - Joel Gunde</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #e5e7eb;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #9b87f5 0%, #7dd3fc 100%);
+            padding: 60px 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            color: white;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        section {
+            margin-bottom: 50px;
+        }
+
+        section h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #9b87f5;
+            border-bottom: 2px solid #7dd3fc;
+            padding-bottom: 10px;
+        }
+
+        section h3 {
+            font-size: 1.5em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #7dd3fc;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #9b87f5;
+            box-shadow: 0 8px 12px rgba(155, 135, 245, 0.2);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: #fbbf24;
+        }
+
+        .card p {
+            color: #9ca3af;
+            margin-bottom: 15px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #9b87f5 0%, #7dd3fc 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(155, 135, 245, 0.3);
+        }
+
+        .cta-button.primary {
+            background: linear-gradient(135deg, #9b87f5 0%, #7dd3fc 100%);
+            padding: 15px 40px;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-box {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #9b87f5;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+
+        .tech-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .tech-badge {
+            background: #2a2a2a;
+            color: #7dd3fc;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: 1px solid #7dd3fc;
+        }
+
+        footer {
+            background: #1a1a1a;
+            border-top: 1px solid #2a2a2a;
+            padding: 30px 20px;
+            text-align: center;
+            color: #9ca3af;
+            margin-top: 60px;
+        }
+
+        .footer-link {
+            color: #9b87f5;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        .dashboard-preview {
+            margin: 30px 0;
+            background: #0a0a0a;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #2a2a2a;
+            text-align: center;
+        }
+
+        .dashboard-preview iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .highlight {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            section h2 {
+                font-size: 1.5em;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>🎌 MyAnimeList Data Analysis</h1>
+        <p>Interactive EDA Dashboard with Python & Plotly</p>
+    </header>
+
+    <div class="container">
+        <!-- Overview Section -->
+        <section>
+            <h2>📊 Project Overview</h2>
+            <p>
+                A comprehensive exploratory data analysis of <span class="highlight">24,000+ anime titles</span> from MyAnimeList. 
+                This project demonstrates end-to-end data analysis workflow using Python, from data cleaning to interactive visualization.
+            </p>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number">24K+</div>
+                    <div class="stat-label">Anime Records</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">7.2</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">8+</div>
+                    <div class="stat-label">Visualizations</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">60+</div>
+                    <div class="stat-label">Years Data</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Insights -->
+        <section>
+            <h2>💡 Key Insights</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>📺 Content Strategy</h3>
+                    <p>12-24 episode series have the highest average ratings. Quality over quantity matters!</p>
+                </div>
+                <div class="card">
+                    <h3>🎬 Type Performance</h3>
+                    <p>Movies consistently outperform TV shows with an average rating of 7.8/10.</p>
+                </div>
+                <div class="card">
+                    <h3>🎭 Genre Trends</h3>
+                    <p>Action dominates (35%), but Drama is rising. Genre mix is crucial for success.</p>
+                </div>
+                <div class="card">
+                    <h3>📈 Production Peak</h3>
+                    <p>Anime production peaked 2015-2020. Clear market saturation trend observed.</p>
+                </div>
+                <div class="card">
+                    <h3>⭐ Rating Patterns</h3>
+                    <p>Bell-curve distribution centered at 7.2/10. Most anime rated between 6.5-8.0.</p>
+                </div>
+                <div class="card">
+                    <h3>🎯 Optimal Format</h3>
+                    <p>The sweet spot for anime success is 1-2 seasons with consistent quality.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Dashboard -->
+        <section>
+            <h2>📈 Interactive Dashboard</h2>
+            <p>Explore the data yourself! Click through the visualizations below:</p>
+            <div class="dashboard-preview">
+                <p style="color: #9ca3af; margin-bottom: 20px;">Loading interactive dashboard...</p>
+                <iframe src="output/main_dashboard.html" title="MyAnimeList Dashboard"></iframe>
+            </div>
+            <p style="margin-top: 20px; color: #9ca3af; text-align: center;">
+                💡 Tip: Use the charts to hover over data points for more details
+            </p>
+        </section>
+
+        <!-- Technical Skills -->
+        <section>
+            <h2>🛠 Technical Skills Demonstrated</h2>
+            
+            <h3>Data Analysis & Manipulation</h3>
+            <ul style="margin-left: 20px;">
+                <li>✅ Data Cleaning (handled 15%+ missing values)</li>
+                <li>✅ Feature Engineering (year extraction, categorization)</li>
+                <li>✅ Statistical Analysis (correlation, distribution)</li>
+                <li>✅ Outlier Detection & Treatment</li>
+            </ul>
+
+            <h3>Exploratory Data Analysis</h3>
+            <ul style="margin-left: 20px;">
+                <li>✅ Univariate Analysis (distributions, statistics)</li>
+                <li>✅ Bivariate Analysis (correlations, relationships)</li>
+                <li>✅ Multivariate Analysis (cross-tabulations, patterns)</li>
+                <li>✅ Time Series Analysis (trends over decades)</li>
+            </ul>
+
+            <h3>Technologies Used</h3>
+            <div class="tech-list">
+                <span class="tech-badge">Python 3.8+</span>
+                <span class="tech-badge">Pandas</span>
+                <span class="tech-badge">NumPy</span>
+                <span class="tech-badge">Matplotlib</span>
+                <span class="tech-badge">Seaborn</span>
+                <span class="tech-badge">Plotly</span>
+                <span class="tech-badge">GitHub</span>
+                <span class="tech-badge">HTML5/CSS3</span>
+            </div>
+        </section>
+
+        <!-- Visualizations Section -->
+        <section>
+            <h2>📊 Dashboard Components</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>KPI Cards</h3>
+                    <p>Key metrics with trend indicators showing performance at a glance.</p>
+                </div>
+                <div class="card">
+                    <h3>Rating Distribution</h3>
+                    <p>Histogram showing the distribution of anime ratings across all titles.</p>
+                </div>
+                <div class="card">
+                    <h3>Type Distribution</h3>
+                    <p>Donut chart breaking down anime by type (TV, Movie, OVA, Special, ONA).</p>
+                </div>
+                <div class="card">
+                    <h3>Trends Over Time</h3>
+                    <p>Line chart with moving average showing anime releases by year since 1960.</p>
+                </div>
+                <div class="card">
+                    <h3>Top Genres</h3>
+                    <p>Bar chart ranking the most popular and highest-rated genres.</p>
+                </div>
+                <div class="card">
+                    <h3>Episodes vs Rating</h3>
+                    <p>Scatter plot revealing the relationship between episode count and ratings.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Getting Started -->
+        <section>
+            <h2>🚀 Getting Started</h2>
+            <p>Want to run this analysis yourself? Follow these steps:</p>
+            
+            <div class="card" style="margin-top: 20px;">
+                <h3>Prerequisites</h3>
+                <ul style="margin-left: 20px;">
+                    <li>Python 3.8 or higher</li>
+                    <li>pip package manager</li>
+                    <li>MyAnimeList dataset from <a href="https://www.kaggle.com/datasets/dbdmobile/myanimelist-dataset" style="color: #7dd3fc;">Kaggle</a></li>
+                </ul>
+
+                <h3>Installation</h3>
+                <pre style="background: #0a0a0a; padding: 15px; border-radius: 8px; overflow-x: auto; margin-top: 10px;"><code>git clone https://github.com/Joelgunde/myanimelist-analysis.git
+cd myanimelist-analysis
+pip install -r requirements.txt
+python src/analyze.py
+python src/visualizations.py</code></pre>
+
+                <a href="https://github.com/Joelgunde/myanimelist-analysis" class="cta-button" style="display: inline-block;">
+                    🐙 View Source Code on GitHub
+                </a>
+            </div>
+        </section>
+
+        <!-- Methodology -->
+        <section>
+            <h2>🔬 Methodology</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>1. Data Collection</h3>
+                    <p>Downloaded MyAnimeList dataset from Kaggle containing 24,905 anime titles with 24 features.</p>
+                </div>
+                <div class="card">
+                    <h3>2. Data Cleaning</h3>
+                    <p>Handled missing values, removed duplicates, converted data types, and treated outliers.</p>
+                </div>
+                <div class="card">
+                    <h3>3. Feature Engineering</h3>
+                    <p>Created derived features including year extraction, rating categories, and popularity tiers.</p>
+                </div>
+                <div class="card">
+                    <h3>4. EDA</h3>
+                    <p>Performed comprehensive analysis from univariate to multivariate patterns.</p>
+                </div>
+                <div class="card">
+                    <h3>5. Visualization</h3>
+                    <p>Built interactive dashboard with 8+ Plotly charts for data exploration.</p>
+                </div>
+                <div class="card">
+                    <h3>6. Insights</h3>
+                    <p>Documented key findings and actionable recommendations for stakeholders.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section>
+            <h2>👤 About Joel Gunde</h2>
+            <p>Data Analyst passionate about turning data into actionable insights through visualization and statistical analysis.</p>
+            <div class="grid" style="margin-top: 20px;">
+                <a href="https://github.com/Joelgunde" class="cta-button" style="display: block; text-align: center;">
+                    🐙 GitHub
+                </a>
+                <a href="https://www.linkedin.com/in/joelgunde/" class="cta-button" style="display: block; text-align: center;">
+                    💼 LinkedIn
+                </a>
+                <a href="mailto:joelgunde77@gmail.com" class="cta-button" style="display: block; text-align: center;">
+                    📧 Email
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>
+            Built with ❤️ by <span class="highlight">Joel Gunde</span> | 
+            <a href="https://github.com/Joelgunde/myanimelist-analysis" class="footer-link">GitHub Repository</a> | 
+            <a href="https://www.kaggle.com/datasets/dbdmobile/myanimelist-dataset" class="footer-link">Dataset</a>
+        </p>
+        <p style="margin-top: 10px; font-size: 0.9em;">
+            © 2024 MyAnimeList Data Analysis Project. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

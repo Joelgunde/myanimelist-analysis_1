@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MyAnimeList Analytics Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #e5e7eb;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #9b87f5, #7dd3fc);
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .dashboard-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        }
+        .card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        iframe {
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎌 MyAnimeList Analytics Dashboard</h1>
+        <p>Comprehensive insights into anime trends, ratings, and popularity</p>
+        <p style="font-size: 14px; margin-top: 10px;">Generated on April 08, 2026 at 02:08 AM</p>
+    </div>
+    
+    <div class="dashboard-grid">
+        <div class="card full-width">
+            <iframe src="kpi_cards.html" height="300"></iframe>
+        </div>
+        
+        <div class="card">
+            <iframe src="rating_dist.html" height="450"></iframe>
+        </div>
+        
+        <div class="card">
+            <iframe src="type_dist.html" height="450"></iframe>
+        </div>
+        
+        <div class="card full-width">
+            <iframe src="trends.html" height="450"></iframe>
+        </div>
+        
+        <div class="card">
+            <iframe src="genres.html" height="550"></iframe>
+        </div>
+        
+        <div class="card">
+            <iframe src="top_anime.html" height="550"></iframe>
+        </div>
+        
+        <div class="card full-width">
+            <iframe src="heatmap.html" height="450"></iframe>
+        </div>
+        
+        <div class="card full-width">
+            <iframe src="episodes_rating.html" height="550"></iframe>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>📊 MyAnimeList Dataset Analysis | Powered by Plotly & Python</p>
+    </div>
+</body>
+</html>
